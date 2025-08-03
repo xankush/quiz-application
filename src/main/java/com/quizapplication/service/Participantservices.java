@@ -1,24 +1,31 @@
 package com.quizapplication.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.quizapplication.dao.Participantdao;
 import com.quizapplication.entity.Participant;
 
 @Service
 public class Participantservices {
 
-	private final List<Participant> users = new ArrayList<>() ;
+	@Autowired
+	Participantdao participantdao;
 	
+	public Participant getParticipantByName(String name) {
+	    return participantdao.findByParticipantName(name)
+	           .orElseThrow(() -> new RuntimeException("Participant not found"));
+	}
+
 	
 	public void addParticipant(Participant p) {
-		this.users.add(p);
+		participantdao.save(p);
 	}
 	
 	public List<Participant> getallparticipant(){
-		return this.users;
+		return participantdao.findAll();
 	}
 	
 	

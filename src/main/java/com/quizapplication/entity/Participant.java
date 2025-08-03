@@ -1,18 +1,45 @@
 package com.quizapplication.entity;
 
+
+
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+@Entity
 public class Participant {
-	String participantname;
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	int participantid;
+	
+	String participantName;
 	
 	String course ;
 	
 	String year;
+	
+	@OneToMany
+	List<Answer> answer; 
+	
+	public List<Answer> getAnswer() {
+		return answer;
+	}
+
+	public void setAnswer(List<Answer> answer) {
+		this.answer = answer;
+	}
 
 	public String getParticipantname() {
-		return participantname;
+		return participantName;
 	}
 
 	public void setParticipantname(String participantname) {
-		this.participantname = participantname;
+		this.participantName = participantname;
 	}
 
 	public String getCourse() {
@@ -31,12 +58,6 @@ public class Participant {
 		this.year = year;
 	}
 
-	public Participant(String participantname, String course, String year) {
-		super();
-		this.participantname = participantname;
-		this.course = course;
-		this.year = year;
-	}
 
 	public Participant() {
 		super();
@@ -45,7 +66,17 @@ public class Participant {
 
 	@Override
 	public String toString() {
-		return "Participant [participantname=" + participantname + ", course=" + course + ", year=" + year + "]";
+		return "Participant [participantid=" + participantid + ", participantname=" + participantName + ", course="
+				+ course + ", year=" + year + ", answer=" + answer + "]";
+	}
+
+	public Participant(int participantid, String participantname, String course, String year, List<Answer> answer) {
+		super();
+		this.participantid = participantid;
+		this.participantName = participantname;
+		this.course = course;
+		this.year = year;
+		this.answer = answer;
 	}
 	
 	

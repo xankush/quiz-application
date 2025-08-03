@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.quizapplication.entity.Participant;
 import com.quizapplication.service.Participantservices;
 
+import jakarta.servlet.http.HttpSession;
+
 
 @org.springframework.stereotype.Controller
 public class Controller {
@@ -24,8 +26,9 @@ public class Controller {
 	
 	
 	@PostMapping("/quiz")
-	public String setquizez(@ModelAttribute Participant participant){
+	public String setquizez(@ModelAttribute Participant participant,HttpSession session){
 		participantservice.addParticipant(participant);
+		session.setAttribute("username", participant.getParticipantname());
 		List<Participant> getallparticipant = participantservice.getallparticipant();
 		getallparticipant.forEach(System.out::println); 
 		return "redirect:/quizpage.html";	
