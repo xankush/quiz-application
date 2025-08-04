@@ -1,8 +1,10 @@
-const radios = document.getElementsByName("option");
-console.log(radios[1].value);
+
+	
+console.log("quiz page loaded")
+
 const optionspanid = ["optionone","optiontwo","optionthree","optionfour"]
 
-var selectedoption =null
+var selectedoption =null;
 var question = null ;
 let correctanswer ;
 const questiontext = document.getElementById("quiztext");
@@ -10,45 +12,36 @@ const questiontext = document.getElementById("quiztext");
 const urlbasepath="http://localhost:8080";
 const quizid = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 let id =0;
-function startquiz(){
+
+const startquiz = ()=>{
 	shuffleArray(quizid);
 	getquestiondata();
-	
 }
 
-startquiz();
-
-
 async function getquestiondata(){
-	
 	if(id<15){
-		
+	const radios = document.getElementsByName("option");
 	fetch(`${urlbasepath}/getquestion/${quizid[id]}`)
-	  .then(response => response.json()) // Convert response to JSON
+	  .then(response => response.json()) 
 	  .then(data => {question = data;
-		
 		questiontext.innerHTML = question.quizText;
-	
 		correctanswer = question.correctAnswer;
 		for(let i = 0 ; i<radios.length;i++){
 			radios[i].value = question.options[i].optionText;
 			const optid = optionspanid[i];
 			document.getElementById(optid).innerHTML =question.options[i].optionText;
 		}
-		
 	  })
-	     // Log the actual question data
 	  .catch(error => console.error('Fetch error:', error));
 	  id++;
 	  console.log(id);
 	}
   }
 
-
-
 console.log(question)
   
 async function getselectedansweer(){
+	const radios = document.getElementsByName("option");
 	for(let i = 0 ; i<radios.length;i++){
 		if(radios[i].checked){
 			selectedoption=radios[i].value;	
@@ -71,6 +64,7 @@ async function getselectedansweer(){
 	
 	
 	getquestiondata()
+	uncheckradios()
 	if(selectedoption === correctanswer ){
 		console.log("correct")
 	}
@@ -90,9 +84,15 @@ function shuffleArray(arr) {
 }
 
 
+function uncheckradios(){const radios = document.getElementsByName("option");
+	radios.forEach(radio=>{
+		radio.checked = false;
+	})
+}
 
 
-  
+
+ 
   
   
 
