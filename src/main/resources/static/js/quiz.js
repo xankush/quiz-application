@@ -141,8 +141,8 @@ function startTimer() {
 
     if (timeLeft <= 0) {
       clearInterval(timer);
-     nextquestion();
-	 
+	  getselectedansweer();
+      nextquestion();
     }
   }, 1000);
 }
