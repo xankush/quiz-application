@@ -13,10 +13,39 @@ const urlbasepath="http://localhost:8080";
 const quizid = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 let id =0;
 
-const startquiz = ()=>{
-	shuffleArray(quizid);
-	getquestiondata();
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    // Pick a random index from 0 to i
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap arr[i] with arr[j]
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  console.log(arr);
+  return arr;
 }
+
+const startquiz = ()=>{
+	fetch(`${urlbasepath}/checksessionstatus`)
+	  .then(  response => {
+	 if (response.status === 200) {
+			getquestiondata();
+	    } else if (response.status === 404) {
+			shuffleArray(quizid);
+			getquestiondata();
+	    } else {
+	      console.log(`Unexpected status: ${response.status}`);
+	   }
+		console.log(response);
+		console.log(quizid);
+	  }
+  )
+	  .catch(error => {
+	    console.error('Fetch error:', error);
+	  });
+}
+
+setTimeout(startquiz(),1000);
 
 async function getquestiondata(){
 	if(id<15){
@@ -71,17 +100,6 @@ async function getselectedansweer(){
 	console.log(correctanswer)
 }
 
-function shuffleArray(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    // Pick a random index from 0 to i
-    const j = Math.floor(Math.random() * (i + 1));
-
-    // Swap arr[i] with arr[j]
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  console.log(arr);
-  return arr;
-}
 
 
 function uncheckradios(){const radios = document.getElementsByName("option");
@@ -90,9 +108,4 @@ function uncheckradios(){const radios = document.getElementsByName("option");
 	})
 }
 
-
-
- 
-  
-  
 
