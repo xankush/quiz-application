@@ -3,15 +3,18 @@
 console.log("quiz page loaded")
 
 const optionspanid = ["optionone","optiontwo","optionthree","optionfour"]
-
+let timer;
+let timeLeft = 60;
 var selectedoption =null;
 var question = null ;
 let correctanswer ;
 const questiontext = document.getElementById("quiztext");
 //const urlbasepath=" https://7315974104d5.ngrok-free.app";
 const urlbasepath="http://localhost:8080";
-const quizid = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+let quizid = [];
+fetch(`${urlbasepath}/getquizarray`).then(response=>response.json()).then(data=>{quizid = data;console.log(quizid)});
 let id =0;
+fetch(`${urlbasepath}/getquizid`).then(response=>response.text()).then(data=>{id = data;console.log(id)});
 
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -27,13 +30,27 @@ function shuffleArray(arr) {
 
 const startquiz = ()=>{
 	fetch(`${urlbasepath}/checksessionstatus`)
-	  .then(  response => {
-	 if (response.status === 200) {
+	.then(resp => resp.text())  
+	.then(response => {
+	 if (response === "Session active") {
+		getquestiondata();
+	    } else if (response === "session is found but it is created first time") {
+			quizid  = shuffleArray(quizid);
+			fetch(`${urlbasepath}/submitquizarray`,{
+				method:"post",
+				headers:{"Content-Type":"application/json"},
+				body:JSON.stringify(quizid)
+			}).then(resp=>resp.text())
+			.then(response=>console.log(response))
+			
+			.catch(err=>console.log(err));
 			getquestiondata();
-	    } else if (response.status === 404) {
-			shuffleArray(quizid);
-			getquestiondata();
-	    } else {
+			
+	    }
+		else if(response ==="Session not found"){
+			window.location.href=`${urlbasepath}`;	
+		}
+		 else {
 	      console.log(`Unexpected status: ${response.status}`);
 	   }
 		console.log(response);
@@ -45,7 +62,7 @@ const startquiz = ()=>{
 	  });
 }
 
-setTimeout(startquiz(),1000);
+startquiz()
 
 async function getquestiondata(){
 	if(id<15){
@@ -62,9 +79,15 @@ async function getquestiondata(){
 		}
 	  })
 	  .catch(error => console.error('Fetch error:', error));
-	  id++;
+	 
 	  console.log(id);
-	}
+	  if(id==14){
+		document.getElementById("quizpagebutton").innerHTML="Submit quiz";
+		
+	  }
+	startTimer()
+  }
+	
   }
 
 console.log(question)
@@ -91,13 +114,13 @@ async function getselectedansweer(){
 	}).then(res=>res.json())
 	.then(data=>console.log("saved:",data));
 	
+	nextquestion();
 	
-	getquestiondata()
-	uncheckradios()
 	if(selectedoption === correctanswer ){
 		console.log("correct")
 	}
 	console.log(correctanswer)
+	if(id ==15){alert("the quiz is submited")};
 }
 
 
@@ -107,5 +130,35 @@ function uncheckradios(){const radios = document.getElementsByName("option");
 		radio.checked = false;
 	})
 }
+function startTimer() {
+  clearInterval(timer);  // Clear any existing timer
+  timeLeft = 60;
+  document.getElementById("time").textContent = timeLeft;
 
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("time").textContent = timeLeft;
 
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+     nextquestion();
+	 
+    }
+  }, 1000);
+}
+
+function nextquestion(){
+	id++;
+		 if(id<15){
+		 	
+		   fetch(`${urlbasepath}/submitquizid`,{
+		 	method:"post",
+		 	headers:{
+		 		"Content-Type":"application/json"
+		 	},
+		 	body:JSON.stringify({"id":id})
+		      }).then(resp=>resp.text()).then(res=>console.log(res));
+		   }
+		   getquestiondata();
+		   uncheckradios();
+}

@@ -30,6 +30,7 @@ public class Controller {
 		System.out.println("participant from js"+participant);
 		participantservice.addParticipant(participant);
 		session.setAttribute("username", participant.getParticipantname());
+		session.setAttribute("firsttimecreated","true");
 		List<Participant> getallparticipant = participantservice.getallparticipant();
 		getallparticipant.forEach(System.out::println); 
 		return "redirect:/quizpage";	
